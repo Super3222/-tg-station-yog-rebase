@@ -181,6 +181,8 @@
 		C.assignment = H.job
 		C.update_label()
 		H.sec_hud_set_ID()
+		for(var/mob/living/carbon/brain/B in src)
+			B.stats.Start( user = H, user_job = C.assignment )
 
 	var/obj/item/device/pda/PDA = H.get_item_by_slot(pda_slot)
 	if(istype(PDA))

@@ -11,6 +11,7 @@
 	origin_tech = "biotech=4"
 	attack_verb = list("attacked", "slapped", "whacked")
 	var/mob/living/carbon/brain/brainmob = null
+	var/datum/knowledge/stats = new /datum/knowledge
 	var/damaged_brain = 0 //whether the brain organ is damaged.
 
 /obj/item/organ/brain/Insert(mob/living/carbon/M, special = 0)

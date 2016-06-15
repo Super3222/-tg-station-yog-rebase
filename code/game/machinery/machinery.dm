@@ -119,6 +119,12 @@ Class Procs:
 	var/interact_offline = 0 // Can the machine be interacted with while de-powered.
 	var/speed_process = 0 // Process as fast as possible?
 
+	failmessage = list (
+		"You can't seem to get the computer to work...",
+		"You stare at the screen, and try to imagine something out of it. You can't really tell what you're looking at.",
+		"Not a thing on the screen makes any sense... maybe it's time to call it a day."
+		)
+
 /obj/machinery/New()
 	..()
 	machines += src
@@ -317,6 +323,13 @@ Class Procs:
 			return 1
 	if(!is_interactable())
 		return 1
+
+	if(ishuman(user))
+		var/mob/living/carbon/human/H = user
+		var/datum/knowledge/K = H.FindKnowledge()
+		if(required_area)
+			if(!K.CheckStat(stat = "[required_area]", O = src))
+				return
 	if(set_machine)
 		user.set_machine(src)
 	interact(user)

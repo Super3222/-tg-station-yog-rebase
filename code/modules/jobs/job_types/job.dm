@@ -181,7 +181,7 @@
 		C.assignment = H.job
 		C.update_label()
 		H.sec_hud_set_ID()
-		for(var/mob/living/carbon/brain/B in src)
+		for(var/obj/item/organ/brain/B in H.internal_organs) // antagonists knowledge datum will start within their jobs.
 			B.stats.Start( user = H, user_job = C.assignment )
 
 	var/obj/item/device/pda/PDA = H.get_item_by_slot(pda_slot)

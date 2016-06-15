@@ -17,6 +17,10 @@
 	var/on_blueprints = FALSE //Are we visible on the station blueprints at roundstart?
 	var/force_blueprints = FALSE //forces the obj to be on the blueprints, regardless of when it was created.
 
+	var/required_area = null // SECURITY, MEDICAL_GENETICS, MEDICAL_DOCTORING, MEDICAL_VIRO, ENGINEERING, ATMOSPHERICS, CARGO, SCIENCE, ROBOTICS ... ILLEGAL?
+	var/required_knowledge = UNAWARE
+	var/list/failmessage = list ("You can't seem to work the darn thing...")
+
 /obj/New()
 	..()
 
@@ -219,4 +223,6 @@
 /obj/proc/CanAStarPass()
 	. = !density
 
-
+/obj/proc/fail_message(mob/user)
+	var/message = pick(failmessage)
+	user << "<span class='notice'>[message]</span>"

@@ -146,6 +146,9 @@
 	var/where4 = mob.equip_in_one_of_slots(R, slots)
 	mob.equip_in_one_of_slots(R,slots)
 
+	var/datum/knowledge/K = mob.FindKnowledge()
+	K.configureEXPERT(syndicate = TRAINED)
+
 	mob.update_icons()
 
 	if (!where2)

@@ -164,6 +164,9 @@
 		synd_mob.equipOutfit(/datum/outfit/syndicate)
 	else
 		synd_mob.equipOutfit(/datum/outfit/syndicate/no_crystals)
+
+	var/datum/knowledge/K = synd_mob.FindKnowledge()
+	K.configureEXPERT(syndicate = TRAINED)
 	return 1
 
 

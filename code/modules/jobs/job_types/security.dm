@@ -299,6 +299,23 @@ var/list/sec_departments = list("engineering", "supply", "medical", "science")
 					break
 	if(department)
 		H << "<b>You have been assigned to [department]!</b>"
+		var/datum/knowledge/K = H.FindKnowledge()
+		switch(department)
+			if("supply")
+				K.CARGO = TRAINED
+			if("engineering")
+				K.ENGINEERING = FAMILIAR
+				K.ATMOSPHERICS = FAMILIAR
+			if("medical")
+				K.MEDICAL_DOCTORING = TRAINED
+				K.MEDICAL_SURGERY = FAMILIAR
+				if(prob(50))
+					K.MEDICAL_GENETICS = FAMILIAR
+				else
+					K.MEDICAL_VIRO = FAMILIAR
+			if("science")
+				K.MEDICAL_SURGERY = FAMILIAR
+				K.SCIENCE = FAMILIAR
 	else
 		H << "<b>You have not been assigned to any department. Patrol the halls and help where needed.</b>"
 

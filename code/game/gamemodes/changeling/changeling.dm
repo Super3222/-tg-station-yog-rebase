@@ -207,6 +207,8 @@ var/list/slot2type = list("head" = /obj/item/clothing/head/changeling, "wear_mas
 		if(H.mind.assigned_role == "Clown")
 			H << "You have evolved beyond your clownish nature, allowing you to wield weapons without harming yourself."
 			H.dna.remove_mutation(CLOWNMUT)
+		var/datum/knowledge/K = H.FindKnowledge()
+		K.configureEXPERT(syndicate = TRAINED)
 
 	var/obj_count = 1
 	for(var/datum/objective/objective in changeling.objectives)

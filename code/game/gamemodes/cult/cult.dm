@@ -134,6 +134,9 @@
 		. += cult_give_item(/obj/item/weapon/tome, mob)
 	else
 		. += cult_give_item(/obj/item/weapon/paper/talisman/supply, mob)
+
+	var/datum/knowledge/K = mob.FindKnowledge()
+	K.configureEXPERT(syndicate = TRAINED)
 	mob << "These will help you start the cult on this station. Use them well, and remember - you are not the only one.</span>"
 
 /datum/game_mode/proc/cult_give_item(obj/item/item_path, mob/living/carbon/human/mob)

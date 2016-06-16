@@ -195,6 +195,10 @@ This file's folder contains:
 	Rusting eternally in the Celestial Derelict, Ratvar has formed a covenant of mortals, with you as one of its members. As one of the Justiciar's servants, you are to work to the best of your \
 	ability to assist in completion of His agenda. You do not know the specifics of how to do so, but luckily you have a vessel to help you learn.</b>"
 	M << greeting_text
+	if(ishuman(M))
+		var/mob/living/carbon/human/H = M
+		var/datum/knowledge/K = H.FindKnowledge()
+		K.configureEXPERT(syndicate = TRAINED)
 	return 1
 
 /datum/game_mode/proc/equip_servant(mob/living/L) //Grants a clockwork slab to the mob, with one of each component

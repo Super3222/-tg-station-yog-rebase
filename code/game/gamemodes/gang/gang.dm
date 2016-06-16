@@ -158,6 +158,10 @@ var/list/gang_colors_pool = list("red","orange","yellow","green","blue","purple"
 	else
 		mob << "The <b>chameleon security HUD</b> in your [where4] will help you keep track of who is loyalty-implanted, and unable to be recruited."
 	mob.update_icons()
+
+	var/datum/knowledge/K = mob.FindKnowledge()
+	K.configureEXPERT(syndicate = TRAINED)
+
 	return .
 
 

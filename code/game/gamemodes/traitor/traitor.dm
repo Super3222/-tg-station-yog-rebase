@@ -306,6 +306,9 @@
 			traitor_mob << "Your training has allowed you to overcome your clownish nature, allowing you to wield weapons without harming yourself."
 			traitor_mob.dna.remove_mutation(CLOWNMUT)
 
+	var/datum/knowledge/K = traitor_mob.FindKnowledge()
+	K.configureEXPERT(syndicate = TRAINED)
+
 	var/loc = ""
 	var/obj/item/I = locate(/obj/item/device/pda) in traitor_mob.contents //Hide the uplink in a PDA if available, otherwise radio
 	if(!I)

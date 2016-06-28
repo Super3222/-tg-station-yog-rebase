@@ -270,6 +270,7 @@
 
 			feedback_inc("cyborg_birth",1)
 
+			usr.stop_pulling()
 			src.loc = O
 			O.robot_suit = src
 

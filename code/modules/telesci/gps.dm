@@ -121,3 +121,99 @@ var/list/GPS_list = list()
 	icon_state = "gps-m"
 	gpstag = "MINER"
 	desc = "A positioning system helpful for rescuing trapped or injured miners, keeping one on you at all times while mining might just save your life."
+
+/obj/item/device/gps/scouter
+	name = "gps scouter"
+	desc = "A modified replica of a normal gps. Instead of tracking down signals from every point in the universe, it instead limits it search down to GPS's in view."
+	gpstag = "SCOUT0"
+	icon_state = "gps-m"
+	channel = "lavaland"
+	icon_state = "gps-sc"
+	var/list/buddies = list()
+	var/scanlimit = 5
+	var/shortrange = 6
+	var/midrange = 12
+	var/longrange = 18
+	var/cooldown
+
+/obj/item/device/gps/scouter/examine(mob/user)
+	..()
+	user << "<span class='notice'>To engage in a buddy system, connect this scouter with another GPS so it does not pick up it's signal.</span>"
+	user << "<span class='notice'>Use CTRL+click to clear GPS's connected to your buddy system.</span>"
+
+/obj/item/device/gps/scouter/New()
+	..()
+	GPS_list.Remove(src)
+
+
+/obj/item/device/gps/scouter/CtrlClick(mob/user)
+	user << "<span class='alert'>You clear the buddy list.</span>"
+	buddies = null
+
+
+/obj/item/device/gps/scouter/attack_self(mob/user)
+	if(!tracking)
+		user << "[src] is turned off. Use alt+click to toggle it back on."
+		return
+
+	if(cooldown)
+		user << "[src] is on a cool down."
+		return
+
+	var/scanned
+	for(var/obj/item/device/gps/GP in GPS_list)
+		if(GP.channel != channel)
+			continue
+
+		if(!GP.tracking)
+			continue
+
+		if(scanned == scanlimit)
+			user << "<span class='danger'>[src] shuts down!</span>"
+			spawn(250)
+				cooldown = FALSE
+			break
+
+		var/turf/T = get_turf(GP)
+		var/turf/T2 = get_turf(src)
+		if(T.z != T2.z)
+			continue
+		var/dat = run_scanner_report(GP)
+		if(dat)
+			user << "<span class='alert'>[dat]</span>"
+			scanned++
+
+
+/obj/item/device/gps/scouter/proc/run_scanner_report(obj/item/device/gps/G)
+	var/turf/T = get_turf(src)
+	if(G in view(shortrange,T))
+		return "GPS detected within short range! Identified as a [G.gpstag]."
+
+	if(G in view(midrange,T))
+		return "GPS detected within medium range! Identified as a [G.gpstag]."
+
+	if(G in view(longrange,T))
+		return "GPS detected within long range! Identified as a [G.gpstag]."
+
+/obj/item/device/gps/scouter/attacked_by(obj/item/I, mob/living/user)
+	if(istype(I, /obj/item/device/gps))
+		if(!istype(I, src))
+			var/obj/item/device/gps/G = I
+			user << "<span class='notice'>You link the scouter with the GPS device. It has now been added to the buddy list."
+			G += buddies
+
+
+/obj/item/device/gps/scouter/advanced
+	name = "advanced gps scouter"
+	desc = "An advanced model of the GPS scouter that is more powerful and efficient in discovering GPS's on your channel."
+	scanlimit = 20
+	var/longerrange = 24
+	var/muchlongerrange = 30
+
+/obj/item/device/gps/scouter/advanced/run_scanner_report(obj/item/device/gps/G)
+	..()
+	if(G in view(longerrange,src))
+		return "GPS detected within an extrodinairly long range! Idnetified as a [G.gpstag]."
+
+	if(G in view(muchlongerrange,src))
+		return "GPS detected far, far away! Identified as a [G.gpstag]."

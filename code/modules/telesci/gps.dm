@@ -123,7 +123,6 @@ var/list/GPS_list = list()
 	desc = "A positioning system helpful for rescuing trapped or injured miners, keeping one on you at all times while mining might just save your life."
 
 /obj/item/device/gps/scouter
-	name = "gps scouter"
 	desc = "A modified replica of a normal gps. Instead of tracking down signals from every point in the universe, it instead limits it search down to GPS's in view."
 	gpstag = "SCOUT0"
 	icon_state = "gps-m"
@@ -144,6 +143,7 @@ var/list/GPS_list = list()
 /obj/item/device/gps/scouter/New()
 	..()
 	GPS_list.Remove(src)
+	name = "gps scouter"
 
 
 /obj/item/device/gps/scouter/CtrlClick(mob/user)
@@ -168,10 +168,8 @@ var/list/GPS_list = list()
 		if(!GP.tracking)
 			continue
 
-		if(scanned == scanlimit)
-			user << "<span class='danger'>[src] shuts down!</span>"
-			spawn(250)
-				cooldown = FALSE
+		if(scanned > scanlimit)
+			scouterCD(user)
 			break
 
 		var/turf/T = get_turf(GP)
@@ -180,9 +178,15 @@ var/list/GPS_list = list()
 			continue
 		var/dat = run_scanner_report(GP)
 		if(dat)
+			playsound(loc, 'sound/machines/twobeep.ogg', 50, 1)
 			user << "<span class='alert'>[dat]</span>"
 			scanned++
 
+	if(scanned && !cooldown)
+		var/estimated_break = scanned * 200
+		cooldown = TRUE
+		spawn(estimated_break)
+			cooldown = FALSE
 
 /obj/item/device/gps/scouter/proc/run_scanner_report(obj/item/device/gps/G)
 	var/turf/T = get_turf(src)
@@ -202,13 +206,22 @@ var/list/GPS_list = list()
 			user << "<span class='notice'>You link the scouter with the GPS device. It has now been added to the buddy list."
 			G += buddies
 
+/obj/item/device/gps/scouter/proc/scouterCD(mob/user)
+	cooldown = TRUE
+	message_admins("[cooldown]")
+	user << "<span class='danger'>[src] shuts down!</span>"
+	spawn(1000)
+		cooldown = FALSE
 
 /obj/item/device/gps/scouter/advanced
-	name = "advanced gps scouter"
 	desc = "An advanced model of the GPS scouter that is more powerful and efficient in discovering GPS's on your channel."
 	scanlimit = 20
-	var/longerrange = 24
-	var/muchlongerrange = 30
+	var/longerrange = 30
+	var/muchlongerrange = 48
+
+/obj/item/device/gps/scouter/advanced/New()
+	..()
+	name = "advanced gps scouter"
 
 /obj/item/device/gps/scouter/advanced/run_scanner_report(obj/item/device/gps/G)
 	..()

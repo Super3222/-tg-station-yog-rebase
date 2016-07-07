@@ -123,7 +123,7 @@ var/list/GPS_list = list()
 	desc = "A positioning system helpful for rescuing trapped or injured miners, keeping one on you at all times while mining might just save your life."
 
 /obj/item/device/gps/scouter
-	desc = "A futuristic device which looks like a re-engineered GPS. Instead of exactly tracking every GPS at it's exact spot, the scouting tool allows you to see which GPS is closest to your location."
+	desc = "This device appears to be a re-engineered GPS. Instead of tracking every GPS's coordinates, the scouting tool allows you to see which GPS is closest to your location."
 	gpstag = "SCOUT0"
 	icon_state = "gps-m"
 	channel = "lavaland"
@@ -133,7 +133,6 @@ var/list/GPS_list = list()
 	var/shortrange = 6
 	var/midrange = 12
 	var/longrange = 18
-	var/maximumrange = 18 // used to see the potential range of the scanner
 	var/cooldown
 	var/cd_multiplier = 150
 
@@ -173,9 +172,6 @@ var/list/GPS_list = list()
 		if(!GP.tracking)
 			continue
 
-		if(GP in scanned_GPS)
-			continue
-
 		if(scanned >= scanlimit)
 			scouterCD(user)
 			break
@@ -205,13 +201,13 @@ var/list/GPS_list = list()
 /obj/item/device/gps/scouter/proc/run_scanner_report(obj/item/device/gps/G)
 	var/turf/T = get_turf(src)
 	var/turf/GT = get_turf(G)
-	if(GT in view(shortrange,T))
+	if(GT in orange(shortrange,T))
 		return "GPS detected within short range! Identified as [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
 
-	if(GT in view(midrange,T))
+	if(GT in orange(midrange,T))
 		return "GPS detected within medium range! Identified as [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
 
-	if(GT in view(longrange,T))
+	if(GT in orange(longrange,T))
 		return "GPS detected within long range! Identified as [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
 
 /obj/item/device/gps/scouter/attacked_by(obj/item/I, mob/living/user)
@@ -223,7 +219,6 @@ var/list/GPS_list = list()
 
 /obj/item/device/gps/scouter/proc/scouterCD(mob/user) // for when we scan over or equal to our scan limit
 	cooldown = TRUE
-	message_admins("[cooldown]")
 	user << "<span class='danger'>[src] shuts down!</span>"
 	spawn(1000)
 		cooldown = FALSE
@@ -235,18 +230,26 @@ var/list/GPS_list = list()
 	scanlimit = 20
 	var/longerrange = 30
 	var/muchlongerrange = 48
-	maximumrange = 48
 	cd_multiplier = 100
 
 /obj/item/device/gps/scouter/advanced/New()
 	..()
 	name = "advanced gps scouter"
 
-/obj/item/device/gps/scouter/advanced/run_scanner_report(obj/item/device/gps/G)
-	..()
+/obj/item/device/gps/scouter/advanced/run_scanner_report(obj/item/device/gps/G) // apparently 3/4 of this can't run with a ..() so the arguments will be here
+	var/turf/T = get_turf(src)
 	var/turf/GT = get_turf(G)
-	if(GT in view(longerrange,src))
+	if(GT in orange(shortrange,T))
+		return "GPS detected within short range! Identified as [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
+
+	if(GT in orange(midrange,T))
+		return "GPS detected within medium range! Identified as [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
+
+	if(GT in orange(longrange,T))
+		return "GPS detected within long range! Identified as [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
+
+	if(GT in orange(longerrange,T))
 		return "GPS detected within an extrodinairly long range! Idnetified as a [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
 
-	if(GT in view(muchlongerrange,src))
+	if(GT in orange(muchlongerrange,T))
 		return "GPS detected far, far away! Identified as a [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."

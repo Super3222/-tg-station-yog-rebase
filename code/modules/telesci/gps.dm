@@ -110,7 +110,7 @@ var/list/GPS_list = list()
 	icon_state = null
 	flags = ABSTRACT
 	tracking = TRUE
-	gpstag = "Eerie Signal"
+	gpstag = "An Eerie Signal"
 	desc = "Report to a coder immediately."
 	invisibility = INVISIBILITY_MAXIMUM
 
@@ -123,7 +123,7 @@ var/list/GPS_list = list()
 	desc = "A positioning system helpful for rescuing trapped or injured miners, keeping one on you at all times while mining might just save your life."
 
 /obj/item/device/gps/scouter
-	desc = "A modified replica of a normal gps. Instead of tracking down signals from every point in the universe, it instead limits it search down to GPS's in view."
+	desc = "A futuristic device which looks like a re-engineered GPS. Instead of exactly tracking every GPS at it's exact spot, the scouting tool allows you to see which GPS is closest to your location."
 	gpstag = "SCOUT0"
 	icon_state = "gps-m"
 	channel = "lavaland"
@@ -133,7 +133,9 @@ var/list/GPS_list = list()
 	var/shortrange = 6
 	var/midrange = 12
 	var/longrange = 18
+	var/maximumrange = 18 // used to see the potential range of the scanner
 	var/cooldown
+	var/cd_multiplier = 150
 
 /obj/item/device/gps/scouter/examine(mob/user)
 	..()
@@ -157,47 +159,60 @@ var/list/GPS_list = list()
 		return
 
 	if(cooldown)
-		user << "[src] is on a cool down."
+		user << "Your scouter is on a cool down."
 		return
 
-	var/scanned
+	var/scanned // calculates the amount of GPS's we've successfully scanned. if it gets to high and meets the scan limit, big CD
+	var/turf/T2 = get_turf(src)
+
 	for(var/obj/item/device/gps/GP in GPS_list)
+
 		if(GP.channel != channel)
 			continue
 
 		if(!GP.tracking)
 			continue
 
-		if(scanned > scanlimit)
+		if(GP in scanned_GPS)
+			continue
+
+		if(scanned >= scanlimit)
 			scouterCD(user)
 			break
 
 		var/turf/T = get_turf(GP)
-		var/turf/T2 = get_turf(src)
 		if(T.z != T2.z)
 			continue
+
 		var/dat = run_scanner_report(GP)
 		if(dat)
 			playsound(loc, 'sound/machines/twobeep.ogg', 50, 1)
 			user << "<span class='alert'>[dat]</span>"
 			scanned++
 
-	if(scanned && !cooldown)
-		var/estimated_break = scanned * 200
+	if(!scanned)
+		user << "<span class='warning'>The scouter device doesn't pick up anything.</span>"
+		return
+
+	if(scanned && !cooldown) // if we've scanned a few and there's still a CD to be had
+		var/estimated_break = scanned * cd_multiplier
 		cooldown = TRUE
 		spawn(estimated_break)
 			cooldown = FALSE
+			playsound(loc, 'sound/machines/twobeep.ogg', 50, 1)
+			visible_message("<span class='notice'>[src] is online again!</span>")
 
 /obj/item/device/gps/scouter/proc/run_scanner_report(obj/item/device/gps/G)
 	var/turf/T = get_turf(src)
-	if(G in view(shortrange,T))
-		return "GPS detected within short range! Identified as a [G.gpstag]."
+	var/turf/GT = get_turf(G)
+	if(GT in view(shortrange,T))
+		return "GPS detected within short range! Identified as [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
 
-	if(G in view(midrange,T))
-		return "GPS detected within medium range! Identified as a [G.gpstag]."
+	if(GT in view(midrange,T))
+		return "GPS detected within medium range! Identified as [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
 
-	if(G in view(longrange,T))
-		return "GPS detected within long range! Identified as a [G.gpstag]."
+	if(GT in view(longrange,T))
+		return "GPS detected within long range! Identified as [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
 
 /obj/item/device/gps/scouter/attacked_by(obj/item/I, mob/living/user)
 	if(istype(I, /obj/item/device/gps))
@@ -206,18 +221,22 @@ var/list/GPS_list = list()
 			user << "<span class='notice'>You link the scouter with the GPS device. It has now been added to the buddy list."
 			G += buddies
 
-/obj/item/device/gps/scouter/proc/scouterCD(mob/user)
+/obj/item/device/gps/scouter/proc/scouterCD(mob/user) // for when we scan over or equal to our scan limit
 	cooldown = TRUE
 	message_admins("[cooldown]")
 	user << "<span class='danger'>[src] shuts down!</span>"
 	spawn(1000)
 		cooldown = FALSE
+		playsound(loc, 'sound/machines/twobeep.ogg', 50, 1)
+		visible_message("[src] is online again!")
 
 /obj/item/device/gps/scouter/advanced
-	desc = "An advanced model of the GPS scouter that is more powerful and efficient in discovering GPS's on your channel."
+	desc = "An upgrade of the latest GPS scouter, with much better performance, can scan for longer ranges, a much smaller cooldown, and will make all of the other miners jealous. With this baby, you could even woe a sexy xenomorph."
 	scanlimit = 20
 	var/longerrange = 30
 	var/muchlongerrange = 48
+	maximumrange = 48
+	cd_multiplier = 100
 
 /obj/item/device/gps/scouter/advanced/New()
 	..()
@@ -225,8 +244,9 @@ var/list/GPS_list = list()
 
 /obj/item/device/gps/scouter/advanced/run_scanner_report(obj/item/device/gps/G)
 	..()
-	if(G in view(longerrange,src))
-		return "GPS detected within an extrodinairly long range! Idnetified as a [G.gpstag]."
+	var/turf/GT = get_turf(G)
+	if(GT in view(longerrange,src))
+		return "GPS detected within an extrodinairly long range! Idnetified as a [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."
 
-	if(G in view(muchlongerrange,src))
-		return "GPS detected far, far away! Identified as a [G.gpstag]."
+	if(GT in view(muchlongerrange,src))
+		return "GPS detected far, far away! Identified as a [G.gpstag]. Signal is [dir2text(get_dir(get_turf(src), get_turf(G)))] from your location."

@@ -950,7 +950,7 @@ var/list/admin_verbs_hideable = list(
 	if(!holder)
 		return
 
-	load_jexp_values()
+	SSjexp.load_jexp_values()
 	message_admins("[src.ckey] has reloaded JEXP stats.")
 	log_admin("[src.ckey] has reloaded JEXP stats.")
 

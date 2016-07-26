@@ -429,7 +429,7 @@ var/next_external_rsc = 0
 	while (query_getid.NextRow())
 		connection_number = text2num(query_getid.item[1])
 
-	load_jexp_values()
+	SSjexp.load_jexp_values()
 
 
 /client/proc/add_verbs_from_config()

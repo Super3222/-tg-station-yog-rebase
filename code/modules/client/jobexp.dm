@@ -27,16 +27,13 @@
 	That data is then sent to the database, to be stored for later use.
 	gain_jexp() is called in /datum/game_mode/declare_completion() inside of game_mode.dm
 
-	JEXP is not a datum, period.
-	It relies on config files to gauage how much a 'new player' needs to play.
-	Usually small values but eh, whatever.
+	JEXP has a datum.
+	It stores whether it's alive and the jobs which are recorded into it's DB table
 
 
 
 
 */
-
-var/global/list/jexpjobs = list ("Warden", "Security Officer", "Security Deputy", "Scientist", "Roboticist", "Cargo Technician", "Quartermaster", "Medical Doctor", "Chemist", "Geneticist", "Station Engineer", "Atmospheric Technician")
 
 /client/proc/gain_jexp(mob/M)
 	if(!dbcon.IsConnected())
@@ -47,12 +44,12 @@ var/global/list/jexpjobs = list ("Warden", "Security Officer", "Security Deputy"
 	if(!assigned_job)
 		return
 
-	if(!jexpjobs.Find(assigned_job))
+	if(!SSjexp.jexpjobs.Find(assigned_job))
 		return
 
 	var/DBQuery/query_jexp = dbcon.NewQuery("SELECT `count` FROM [format_table_name("jexp")] WHERE `job` = '[assigned_job]' AND `ckey` = '[sanitizeSQL(get_ckey(M))]'")
 
-	if(!query_jexp.Execute())
+	if(!query_jexp.Execute()) // if the job doesn't exist in a DB row, yet it's in jexpjobs, then we create it.
 		var/DBQuery/jexp_insert = dbcon.NewQuery("INSERT INTO `[format_table_name("jexp")]` (`ckey`, `job`) VALUES ('[get_ckey(M)]', '[assigned_job]') ON DUPLICATE KEY IGNORE")
 		jexp_insert.Execute()
 		gain_jexp(M)
@@ -74,38 +71,6 @@ var/global/list/jexpjobs = list ("Warden", "Security Officer", "Security Deputy"
 		return
 
 
-/proc/load_jexp_values(only_one, client/CO)
-
-	if(!dbcon.IsConnected())
-		return
-
-	var/list/used_clients = list ()
-
-	if(only_one)
-		if(CO)
-			used_clients += CO
-
-	else
-		for(var/client/client in clients)
-			used_clients += client
-
-
-
-	for(var/client/C in used_clients)
-		var/ckeygained = sanitizeSQL(get_ckey(C))
-
-		for(var/t in jexpjobs)
-			var/DBQuery/jexp_insert = dbcon.NewQuery("INSERT INTO [format_table_name("jexp")] (ckey, job) VALUES ('[ckeygained]', '[t]') ON DUPLICATE KEY IGNORE")
-			jexp_insert.Execute()
-
-			var/DBQuery/query_jexp = dbcon.NewQuery("SELECT `count` FROM [format_table_name("jexp")] WHERE `ckey` = '[ckeygained]' AND `job` = '[t]'")
-			query_jexp.Execute()
-
-			var/counts
-			while(query_jexp.NextRow())
-				counts = text2num(query_jexp.item[1])
-			C.cachedjexp["[t]"] = counts
-
 ///////////////////////////
 /// 	CLIENT VERBS    ///
 //////////////////////////
@@ -118,7 +83,9 @@ var/global/list/jexpjobs = list ("Warden", "Security Officer", "Security Deputy"
 
 	src << "<span class='italics'>When the amount of times you've played a certain job is over it's cap, it means that you are able to unlock more jobs within that division.</span>"
 	src << "<span class='italics'>Remember that blank values mean they are either not cached or equal 0.</span>"
-	my_jexpstats()
+
+	my_jexpstats() // automatically reloads our jexp
+
 	var/notification = input(src, "Department", "Department") as null|anything in list("Security", "Science", "Engineering", "Supply", "Medical")
 	if(!notification)
 		return
@@ -138,11 +105,6 @@ var/global/list/jexpjobs = list ("Warden", "Security Officer", "Security Deputy"
 
 
 
-/client/verb/my_jexpstats()
-	set name = "Reload JobStats"
-	set category = "OOC"
-	set desc = "This will update your jexp cache, allowing you to see your job stats. Automatically happens when you log in, remember."
-
-
-	load_jexp_values(only_one = TRUE, src)
+/client/proc/my_jexpstats()
+	SSjexp.load_jexp_values(only_one = TRUE, src)
 	src << "<span class=boldnotice'>Your JEXP stats have been successfully reloaded.</span>"

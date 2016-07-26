@@ -169,8 +169,7 @@ var/list/admin_verbs_debug = list(
 	/client/proc/create_outfits,
 	/client/proc/debug_huds,
 	/client/proc/map_template_load,
-	/client/proc/map_template_upload,
-	/client/proc/reload_jexp_exemption
+	/client/proc/map_template_upload
 	)
 var/list/admin_verbs_possess = list(
 	/proc/possess,
@@ -926,21 +925,6 @@ var/list/admin_verbs_hideable = list(
 	world << "<b>The [fluff_adjective] admins have decided to [fluff_adverb] revive everyone. :)</b>"
 	message_admins("[src] revived [revive_count] mobs.")
 	log_admin("[src] revived [revive_count] mobs.")
-
-
-/client/proc/reload_jexp_exemption()
-	set name = "Reload JEXP exemption lists"
-	set category = "Debug"
-	set desc = "This will reload the lists which exempts players from needing to play a certain amount of rounds to unlock heads/security."
-
-	if(!holder)
-		return
-
-	load_all_exp_lists()
-	message_admins("[src.ckey] has reloaded JEXP's exemption lists.")
-	log_admin("[src.ckey] has reloaded JEXP's exemption lists.")
-
-
 
 /client/proc/reload_jexp()
 	set name = "Reload JEXP stats"

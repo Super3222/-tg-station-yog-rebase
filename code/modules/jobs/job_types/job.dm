@@ -137,22 +137,18 @@
 
 /datum/job/proc/player_exp_enough(client/C)
 
-	if(C) // for the first week and a half it is in the game, it will be disabled.
-		return 1
 
+//	if(!SSjexp.jexpstatus)
+//		return 1
 
 	if(!jexp_locked)
-		return 1
-
-	if(check_if_expempted(C, title))
-		return 1
-
-	if(!SSjexp.jexpstatus)
 		return 1
 
 	if(!dbcon.IsConnected())
 		return 1
 
+	if(!C.findJoinDate(newclient = FALSE)) // if your byond account is older then two months, you're exempted from this
+		return 1
 
 		if(title == "Head of Personnel")
 			if(C.cachedjexp["Quartermaster"] < config.jexpvalues["cargo"])

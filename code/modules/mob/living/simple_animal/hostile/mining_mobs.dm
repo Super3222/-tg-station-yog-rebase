@@ -57,7 +57,7 @@
 	icon_dead = "Basilisk_dead"
 	icon_gib = "syndicate_gib"
 	move_to_delay = 20
-	projectiletype = /obj/item/projectile/bullet/dart/basilisk
+	projectiletype = /obj/item/projectile/temp/basilisk
 	projectilesound = 'sound/weapons/pierce.ogg'
 	ranged = 1
 	ranged_message = "stares"
@@ -80,6 +80,16 @@
 	loot = list(/obj/item/weapon/ore/diamond{layer = ABOVE_MOB_LAYER},
 				/obj/item/weapon/ore/diamond{layer = ABOVE_MOB_LAYER})
 
+/obj/item/projectile/temp/basilisk
+	name = "freezing blast"
+	icon_state = "ice_2"
+	damage = 0
+	damage_type = BURN
+	nodamage = 1
+	flag = "energy"
+	temperature = 50
+
+
 /obj/item/projectile/bullet/dart/basilisk
 	name = "freezing blast"
 	icon_state = "ice_2"
@@ -87,7 +97,7 @@
 
 /obj/item/projectile/bullet/dart/basilisk/New()
 	..()
-	reagents.add_reagent("bolamine",5)
+	reagents.add_reagent("superbolamine",5)
 
 /mob/living/simple_animal/hostile/asteroid/basilisk/GiveTarget(new_target)
 	if(..()) //we have a target
@@ -718,6 +728,7 @@
 	icon_aggro = "watcher"
 	icon_dead = "watcher_dead"
 	pixel_x = -10
+	projectiletype = /obj/item/projectile/bullet/dart/basilisk
 	throw_message = "bounces harmlessly off of"
 	melee_damage_lower = 15
 	melee_damage_upper = 15

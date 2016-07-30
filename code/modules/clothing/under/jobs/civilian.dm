@@ -188,3 +188,15 @@
 	item_state = "explorer"
 	item_color = "explorer"
 	can_adjust = 0
+	sensor_mode = 3
+	random_sensor = 0
+
+/obj/item/clothing/under/rank/miner/medic
+	desc = "A blue and white uniform for recovery medics in hazardous environments."
+	name = "recovery agent's jumpsuit"
+	icon_state = "ra_explorer"
+	item_state = "ra_explorer"
+	item_color = "ra_explorer"
+	can_adjust = 0
+	sensor_mode = 3
+	random_sensor = 0

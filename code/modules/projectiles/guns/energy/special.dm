@@ -340,7 +340,7 @@
 	if(charge_tick < charge_delay)
 		return 0
 	charge_tick = 0
-	if(!power_supply) 
+	if(!power_supply)
 		return 0
 	if(power_supply.charge < power_supply.maxcharge)
 		robocharge()

@@ -497,3 +497,41 @@
 	anchored = 1
 	layer = BELOW_MOB_LAYER
 	density = 0
+
+//Medic Stuff
+
+
+/obj/item/weapon/reagent_containers/hypospray/medipen/lavaland
+	desc = "A modified medipen crafted for toxic situations within Lavaland. Interestingly enough, the stuff that's made out of a single warm donkpocket was glued into here."
+	list_reagents = list("nutriment" = 12, "omnizine" = 12, "charcoal" = 12)
+	icon_state = "combat_hypo"
+	volume = 36
+	amount_per_transfer_from_this = 36
+
+/obj/item/weapon/reagent_containers/hypospray/medipen/lavaland/lesser
+	desc = "A medipen used to combat the secreted chemical, super bolamine, from affecting a patient."
+	list_reagents = list("charcoal" = 15)
+	volume = 15
+	amount_per_transfer_from_this = 15
+
+/obj/item/weapon/storage/firstaid/lavaland
+	name = "lavaland survival kit"
+	desc = "Used to treat cases of goliath pummeling, lava jumping, and even bolamine poisoning."
+	icon_state = "brownfirstaid"
+	item_state = "firstaid-mmedic"
+
+
+/obj/item/weapon/storage/firstaid/lavaland/New()
+	..()
+	if(empty) return
+	new /obj/item/stack/medical/bruise_pack(src)
+	new /obj/item/stack/medical/ointment(src)
+	new /obj/item/stack/medical/gauze(src)
+	new /obj/item/weapon/reagent_containers/hypospray/medipen/lavaland(src)
+	new /obj/item/weapon/reagent_containers/hypospray/medipen/lavaland(src)
+	new /obj/item/weapon/reagent_containers/hypospray/medipen/lavaland(src)
+	new /obj/item/device/healthanalyzer(src)
+	return
+
+
+

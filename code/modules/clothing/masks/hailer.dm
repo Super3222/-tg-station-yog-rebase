@@ -16,6 +16,7 @@
 	var/cooldown_special
 	var/recent_uses = 0
 	var/broken_hailer = 0
+	dog_fashion = /datum/dog_fashion/head/sechailer
 
 /obj/item/clothing/mask/gas/sechailer/swat
 	name = "\improper SWAT mask"

@@ -171,3 +171,8 @@
 /datum/dog_fashion/back/deathsquad
 	name = "Trooper REAL_NAME"
 	desc = "That's not red paint. That's real corgi blood."
+
+/datum/dog_fashion/head/sechailer
+	name = "Officer REAL_NAME"
+	desc = "A loyal member of the force. Has a big commanding voice for the job too."
+	speak = list("le woof!", "le bark!", "JAPPE!!")

@@ -15,6 +15,8 @@
 	var/speak_chance = 0
 	var/list/emote_hear = list()	//Hearable emotes
 	var/list/emote_see = list()		//Unlike speak_emote, the list of things in this variable only show by themselves with no spoken text. IE: Ian barks, Ian yaps
+	var/purr_sound
+	var/growl_sound
 
 	var/turns_per_move = 1
 	var/turns_since_move = 0
@@ -311,6 +313,8 @@
 			if (health > 0)
 				visible_message("<span class='notice'>[M] [response_help] [src].</span>")
 				playsound(loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
+				if(purr_sound)
+					playsound(loc, "[purr_sound]", 50, 1, -1)
 
 		if("grab")
 			grabbedby(M)

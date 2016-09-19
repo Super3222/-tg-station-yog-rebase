@@ -745,7 +745,7 @@
 	icon_dead = "goliath_dead"
 	throw_message = "does nothing to the tough hide of the"
 	pre_attack_icon = "goliath2"
-	butcher_results = list(/obj/item/weapon/reagent_containers/food/snacks/meat/slab/goliath = 2, /obj/item/stack/sheet/animalhide/goliath_hide = 1, /obj/item/stack/sheet/bone = 5)
+	butcher_results = list(/obj/item/weapon/reagent_containers/food/snacks/meat/slab/goliath = 2, /obj/item/stack/sheet/animalhide/goliath_hide = 2, /obj/item/stack/sheet/bone = 5)
 	loot = list()
 	stat_attack = 1
 	robust_searching = 1
@@ -759,7 +759,7 @@
 
 /mob/living/simple_animal/hostile/asteroid/marrowweaver
 	name = "marrow weaver"
-	desc = "A big, angry, poisonous spider. It likes to snack on bone marrow. Its preferred food source is you."
+	desc = "A menacing mutation of the space arachnid, it injects a deadly venom into its victim which destroys their organs turning them into slush. Its preferred food source is you."
 	icon = 'icons/mob/lavaland/lavaland_monsters.dmi'
 	icon_state = "weaver"
 	icon_living = "weaver"

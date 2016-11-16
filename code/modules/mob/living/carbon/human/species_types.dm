@@ -129,7 +129,11 @@ datum/species/lizard/before_equip_job(datum/job/J, mob/living/carbon/human/H)
 /datum/species/lizard/ashwalker
 	name = "Ash Walker"
 	id = "lizard"
+	specflags = list(MUTCOLORS,EYECOLOR,LIPS,NOBREATH,NOGUNS,NOMACHINERY)
+
+/datum/species/lizard/ashwalker/chieftian
 	specflags = list(MUTCOLORS,EYECOLOR,LIPS,NOBREATH,NOGUNS)
+
 
 /datum/species/lizard/fly
 	// lizards turned into fly-like abominations in teleporter accidents.

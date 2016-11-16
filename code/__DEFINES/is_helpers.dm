@@ -21,6 +21,8 @@
 #define isflyperson(A) (is_species(A, /datum/species/fly))
 #define iszombie(A) (is_species(A, /datum/species/zombie))
 #define ishumanbasic(A) (is_species(A, /datum/species/human))
+#define isashwalker(A) (is_species(A, /datum/species/lizard/ashwalker))
+#define ischiefwalker(A) (is_species(A, /datum/species/lizard/ashwalker/chieftian))
 
 #define ismonkey(A) (istype(A, /mob/living/carbon/monkey))
 

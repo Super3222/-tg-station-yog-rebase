@@ -122,4 +122,8 @@
 
 	var/datum/crafting_recipe/craft = new CR(src)
 	message_admins("THIS IS CR -> [CR]")
-	pc.construct_item(user, craft)
+
+	if(pc.construct_item(user, craft))
+		visible_message("[user] begins to shake, but than ceases! It appears that it cannot create the specified weapon.")
+	else
+		visible_message("[user] sighs peacefully as [craft] rises.")

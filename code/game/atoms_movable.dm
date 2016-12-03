@@ -8,6 +8,7 @@
 	var/mob/pulledby = null
 	var/languages_spoken = 0 //For say() and Hear()
 	var/languages_understood = 0
+	var/identifier = null //Only used for AI tracking.
 	var/verb_say = "says"
 	var/verb_ask = "asks"
 	var/verb_exclaim = "exclaims"
@@ -375,3 +376,7 @@
 /atom/movable/proc/on_z_level_change()
 	for(var/atom/movable/A in contents)
 		A.on_z_level_change()
+
+/atom/movable/proc/on_pulledby(mob/new_pulledby, supress_message)
+	pulledby = new_pulledby
+	return

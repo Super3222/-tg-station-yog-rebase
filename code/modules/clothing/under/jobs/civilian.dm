@@ -192,11 +192,12 @@
 	random_sensor = 0
 
 /obj/item/clothing/under/rank/miner/medic
-	desc = "A blue and white uniform for recovery medics in hazardous environments."
-	name = "recovery agent's jumpsuit"
-	icon_state = "ra_explorer"
-	item_state = "ra_explorer"
-	item_color = "ra_explorer"
+	desc = "A verstile blue and white uniform for honored to hard working recovery medics in hazardous environments. It has minor protection against biohazards."
+	name = "recovery medic's jumpsuit"
+	icon_state = "rm_explorer"
+	item_state = "rm_explorer"
+	item_color = "rm_explorer"
 	can_adjust = 0
 	sensor_mode = 3
 	random_sensor = 0
+	armor = list(melee = 0, bullet = 0, laser = 0,energy = 0, bomb = 0, bio = 15, rad = 0)

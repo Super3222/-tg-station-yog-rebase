@@ -179,15 +179,15 @@
 		M.Dizzy(5)
 		if(iscultist(M) && prob(5))
 			M.say(pick("Av'te Nar'sie","Pa'lid Mors","INO INO ORA ANA","SAT ANA!","Daim'niodeis Arc'iai Le'eones","R'ge Na'sie","Diabo us Vo'iscum","Eld' Mon Nobis"))
-		else if(is_servant_of_ratvar(M) && prob(5))
+		else if(is_servant_of_ratvar(M) && prob(8))
 			switch(pick("speech", "message", "emote"))
 				if("speech")
-					M.say("...[pick("Ratvar... lbhe yvtug tebjf qnex", "Jurer ner lbh, znfgre?", "Ur yvrf ehfgvat va Reebe", "Chetr nyy hagehguf naq... naq... fbzrguvat")]...")
+					clockwork_say(M, "...[text2ratvar(pick("Engine... your light grows dark...", "Where are you, master?", "He lies rusting in Error...", "Purge all untruths and... and... something..."))]")
 				if("message")
-					M << "<span class='warning'><b>[pick("Ratvar's illumination of your mind has begun to flicker.", "He lies rusting in Reebe, derelict and forgotten. And there he shall stay.", \
-					"You can't save him. Nothing can save him now.", "It seems that Nar-Sie will triumph after all.")]</b></span>"
+					M << "<span class='boldwarning'>[pick("Ratvar's illumination of your mind has begun to flicker", "He lies rusting in Reebe, derelict and forgotten. And there he shall stay", \
+					"You can't save him. Nothing can save him now", "It seems that Nar-Sie will triumph after all")].</span>"
 				if("emote")
-					M.visible_message("<span class='warning'>[M] [pick("whimpers quietly", "shivers as though cold", "glances around in paranoia")]</span>")
+					M.visible_message("<span class='warning'>[M] [pick("whimpers quietly", "shivers as though cold", "glances around in paranoia")].</span>")
 	if(data >= 75)	// 30 units, 135 seconds
 		if (!M.confused)
 			M.confused = 1
@@ -626,7 +626,7 @@
 	if(iscarbon(M))
 		var/mob/living/carbon/C = M
 		if(C.blood_volume < BLOOD_VOLUME_NORMAL)
-			C.blood_volume += 0.5
+			C.blood_volume += REAGENTS_METABOLISM * 0.5
 	..()
 
 /datum/reagent/iron/reaction_mob(mob/living/M, method=TOUCH, reac_volume)
@@ -1247,3 +1247,29 @@ datum/reagent/romerol
 	// Silently add the zombie infection organ to be activated upon death
 	new /obj/item/organ/body_egg/zombie_infection(H)
 	..()
+	
+/datum/reagent/laughter
+	name = "liquid laughter"
+	id = "laughter"
+	description = "A chemical that causes happiness in the subject. Honk!"
+	color = "#FFFF00" // Eye searingly yellow - RGB (255, 255, 0)
+	overdose_threshold = 30
+
+/datum/reagent/laughter/reaction_mob(mob/living/M)
+	if(!M.reagents.has_reagent("laughter"))
+		M << "<span class='notice'>You suddenly feel very happy!</span>"
+	..()
+
+/datum/reagent/laughter/on_mob_life(mob/living/M)
+	if(prob(25))
+		M.emote(pick(list("laugh","giggle","smile","chuckle")))
+	..()
+
+/datum/reagent/laughter/on_mob_delete(mob/living/M)
+	M << "<span class='notice'>Everything is terrible again...</span>"
+
+/datum/reagent/laughter/overdose_start(mob/living/M)
+	M << "<span class='userdanger'>You start laughing hysterically!</span>"
+
+/datum/reagent/laughter/overdose_process(mob/living/M)
+	M.emote(pick(list("laugh","giggle")))

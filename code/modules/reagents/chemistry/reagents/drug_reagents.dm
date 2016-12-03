@@ -156,38 +156,6 @@
 	..()
 	. = 1
 
-/datum/reagent/drug/superbolamine
-	name = "Super Bolamine"
-	id = "superbolamine"
-	description = "A nasty chemical which can only possibly be secreted from a watchers eye. \
-				Able to seep through even the toughest of hardsuits and infect it's targets."
-	reagent_state = LIQUID
-	color = "#4999FF"
-	metabolization_rate = 1.7 // so it drains our kinda fast considering it's adding only 5u
-
-/datum/reagent/drug/bolamine/on_mob_life(mob/living/M)
-	if(holder.has_reagent("charcoal")) // charcoal is the ANTI super bolamine
-		M.reagents.remove_reagent("charcoal",1)
-		..()
-		return
-
-	M.reagents.add_reagent("bolamine", 1)
-	if(prob(60)) // we actually WANT them to get drowsy and jiterry from this
-		M.drowsyness += 50
-		M.jitteriness += 15
-
-	if(prob(25))
-		if(iscarbon(M))
-			var/mob/living/carbon/C = M
-			C.vomit(10)
-		if(holder.has_reagent("bolamine"))
-			M.drowsyness += 25
-
-	if(prob(5))
-		M.reagents.add_reagent("histamine",rand(1,3))
-
-	..()
-
 /datum/reagent/drug/methamphetamine
 	name = "Methamphetamine"
 	id = "methamphetamine"

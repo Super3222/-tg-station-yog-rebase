@@ -155,6 +155,7 @@
 /datum/map_template/shuttle/emergency/yogstation
 	suffix = "yogstation"
 	name = "The Undying Classic"
+	description = "The old and faithful Yogstation shuttle."
 
 /datum/map_template/shuttle/ferry/base
 	suffix = "base"
@@ -194,6 +195,10 @@
 /datum/map_template/shuttle/whiteship/meta
 	suffix = "meta"
 	name = "NT Recovery White-ship"
+
+/datum/map_template/shuttle/whiteship/shitbucket_v3
+	suffix = "shitbucket_v3"
+	name = "The S.S. Shitbucket, MK.3"
 
 /datum/map_template/shuttle/cargo/box
 	suffix = "box"

@@ -46,7 +46,7 @@
 		return
 	if(!ishuman(usr))
 		return
-	if(world.time < CHALLENGE_SHUTTLE_DELAY) // 25 minutes
+	if(world.time < 15000) // 25 minutes
 		usr << "<span class='warning'>It's too early into the shift to do this! Play your part!"
 		return
 	var/mob/living/carbon/human/H = usr
@@ -64,23 +64,17 @@
 		else
 			H << "<span class='notice'>You break your vow of silence.</span>"
 
-
-/obj/effect/proc_holder/spell/targeted/mime/touch
-	name = "Invisible touch"
-	desc = "It's disappeared!"
-	school = "mime"
+/obj/effect/proc_holder/spell/targeted/touch/mime
+	name = "Invisible Touch"
+	desc = "It dissapeared!"
+	hand_path = "/obj/item/weapon/melee/touch_attack/nothing"
 	panel = "Mime"
+
 	invocation_type = "emote"
 	invocation_emote_self = "<span class='notice'>You blow on your finger.</span>"
+	school = "mime"
+	charge_max = 1000
 	clothes_req = 0
-	range = 0
-	cast_sound = null
-	human_req = 1
+	cooldown_min = 500
 
-	action_icon_state = "mime"
-	action_background_icon_state = "bg_mime"
-
-/obj/effect/proc_holder/spell/aoe_turf/conjure/mime_wall/Click()
-	if(usr && usr.mind)
-		if(ishuman(usr))
-			var/mob/living/carbon/human/H = usr
+	action_icon_state = "nothing"

@@ -182,9 +182,6 @@ Virologist
 	satchel = /obj/item/weapon/storage/backpack/satchel_vir
 	dufflebag = /obj/item/weapon/storage/backpack/dufflebag/med
 
-/*
-Mining Medic
-*/
 /datum/job/miningmedic
 	title = "Mining Medic"
 	flag = MMEDIC
@@ -215,6 +212,7 @@ Mining Medic
 	r_pocket = /obj/item/device/gps/mining
 	gloves = /obj/item/clothing/gloves/color/latex
 	mask = /obj/item/clothing/mask/surgical
+
 
 /*
 Paramedic

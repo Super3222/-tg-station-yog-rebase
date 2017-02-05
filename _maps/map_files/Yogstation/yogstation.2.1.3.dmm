@@ -67981,6 +67981,7 @@
 /turf/open/floor/plasteel/shuttle/white,
 /area/shuttle/escape)
 "cFM" = (
+/turf/open/space,
 /obj/structure/shuttle/engine/propulsion{
 	icon_state = "propulsion";
 	dir = 4
@@ -68040,6 +68041,7 @@
 /turf/open/floor/plasteel/shuttle/purple,
 /area/shuttle/transport)
 "cFX" = (
+/turf/open/space,
 /obj/structure/shuttle/engine/propulsion{
 	icon_state = "propulsion";
 	dir = 4
@@ -88859,7 +88861,7 @@ bLy
 apo
 apo
 bMQ
-aqe
+bMQ
 bJX
 aGf
 aaA
@@ -89373,7 +89375,7 @@ bLy
 apo
 apo
 bMQ
-bQS
+bMQ
 bJX
 aGf
 aaA

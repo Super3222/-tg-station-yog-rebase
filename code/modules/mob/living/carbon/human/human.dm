@@ -1116,3 +1116,33 @@
 	if(dna && dna.species && dna.species.handle_flash(src, intensity, override_blindness_check, affect_silicon, visual))
 		return 0
 	return ..()
+
+/mob/living/carbon/human/proc/UpdateBloodTracking()
+	if(bloodtracking)
+		RemoveBloodTracking()
+
+	bloodtracking = image(icon('icons/effects/effects.dmi', "redoverlay"), loc = src)
+	bloodtracking.override = 1
+
+	for(var/mob/living/L in mob_list)
+		if(L.mind)
+			if(L.mind.vampire)
+				if(L.mind.vampire.tracking == src)
+					if(L.client)
+						if(L.client.images)
+							L.client.images |= bloodtracking
+
+/mob/living/carbon/human/proc/RemoveBloodTracking()
+	if(!bloodtracking)
+		return
+
+	if(mind.vampire)
+		return
+
+	for(var/mob/living/L in mob_list)
+		if(L.mind.vampire)
+			if(L.mind.vampire.tracking == src)
+				if(L.client)
+					if(L.client.images)
+						L.client.images.Remove(thermalOverlay)
+	qdel(bloodtracking)

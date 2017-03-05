@@ -54,6 +54,7 @@
 
 	var/datum/faction/faction 			//associated faction
 	var/datum/changeling/changeling		//changeling holder
+	var/datum/vampire/vampire			//vampire holder
 	var/linglink
 
 	var/miming = 0 // Mime's vow of silence
@@ -67,6 +68,7 @@
 	var/mob/living/enslaved_to //If this mind's master is another mob (i.e. adamantine golems)
 	var/quiet_round = 0 //Won't be picked as target in most cases
 	var/list/outfit_browsers = null
+
 
 /datum/mind/New(var/key)
 	src.key = key

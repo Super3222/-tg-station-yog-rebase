@@ -46,7 +46,8 @@
 	//Update our name based on whether our face is obscured/disfigured
 	name = get_visible_name()
 
-	dna.species.spec_life(src) // for mutantraces
+	if(dna.species.update_life)
+		dna.species.spec_life(src) // for mutantraces
 
 
 /mob/living/carbon/human/calculate_affecting_pressure(pressure)

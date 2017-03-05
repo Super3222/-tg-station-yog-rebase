@@ -38,6 +38,7 @@
 		target.drip(1)
 		target.blood_volume -= drainrate
 		vampire.add_blood(drainpayoff)
+		playsound(H.loc,'sound/items/drink.ogg', rand(10,50), 1)
 		if(check_status(user, vampire, target))
 			H << "<span class='noticevampire'>You have gained [drainrate] units of blood from [target].</span>"
 		if(!target.blood_volume || target.blood_volume < drainrate)
@@ -79,7 +80,7 @@
 		return
 
 	V.chosen_click_attack = src
-	H << "<span class='vampirewarning'>[src] is now active. (Use your middle mouse button on anyone to use.)
+	H << "<span class='vampirewarning'>[src] is now active. (Use your middle mouse button on anyone to activate.)"
 	return 1
 
 /obj/effect/proc_holder/vampire/gaze/action_on_click(/mob/living/carbon/human/H, /datum/vampire/V, atom/target)
@@ -164,3 +165,18 @@
 							V.tracking = chosentarget
 							V.tracking.UpdateBloodTracking()
 
+
+/obj/effect/proc_holder/vampire/clearstuns
+	name = "Clear Stuns"
+	desc = "Remove all stuns and stamina damage from yourself."
+	blood_cost = 25
+	cooldownlen = 150
+	pay_blood_immediately = FALSE
+
+/obj/effect/proc_holder/vampire/clearstuns/fire(mob/living/carbon/human/H)
+	H << "<span class='vampirenotice'>You feel a rush of energy overcome you.</span>"
+	H.SetSleeping(0)
+	H.SetParalysis(0)
+	H.SetStunned(0)
+	H.SetWeakened(0)
+	H.AdjustStaminaLoss(-(user.getStaminaLoss()))

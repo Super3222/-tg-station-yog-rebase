@@ -35,7 +35,7 @@
 	if(basic_unlocked)
 		return
 
-	baisc_unlocked = TRUE
+	basic_unlocked = TRUE
 	vampire.AddAbility(new /obj/effect/proc_holder/vampire/bite)
 	vampire.AddAbility(new /obj/effect/proc_holder/vampire/gaze)
 	vampire.AddAbility(new /obj/effect/proc_holder/vampire/bloodtracking)

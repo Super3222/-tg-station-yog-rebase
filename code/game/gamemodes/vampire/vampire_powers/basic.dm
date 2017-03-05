@@ -40,7 +40,7 @@
 		vampire.add_blood(drainpayoff)
 		if(check_status(user, vampire, target))
 			H << "<span class='noticevampire'>You have gained [drainrate] units of blood from [target].</span>"
-		if(!target.blood_volume)
+		if(!target.blood_volume || target.blood_volume < drainrate)
 			H << "<span class='noticevampire'>[target] has ran out of blood.</span>"
 			vampire.isDraining = FALSE
 		if(target.job == "Chaplain")

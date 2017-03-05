@@ -377,6 +377,15 @@
 		return ab.cost_check(ab.check_turf,owner,1)
 	return 0
 
+/datum/action/spell_action/vampire
+
+/datum/action/spell_action/vampire/IsAvailable()
+	if(!target)
+		return 0
+	var/obj/effect/proc_holder/vampire/vp = target
+	if(owner)
+		return !(vp.CD) // if it's on, it returns 0 - and the action button dims.
+	return 0
 
 
 //Preset for general and toggled actions

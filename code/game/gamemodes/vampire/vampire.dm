@@ -33,7 +33,7 @@
 	return 1
 
 /datum/game_mode/vampire/post_setup()
-	for(var/datum/mind/vamps in vampires)
+	for(var/datum/mind/vamp in vampires)
 		transform_vampire(vamp)
 		forge_objectives(vamp)
 	return 1

@@ -171,7 +171,6 @@
 	desc = "Remove all stuns and stamina damage from yourself."
 	blood_cost = 25
 	cooldownlen = 150
-	pay_blood_immediately = FALSE
 
 /obj/effect/proc_holder/vampire/clearstuns/fire(mob/living/carbon/human/H)
 	H << "<span class='vampirenotice'>You feel a rush of energy overcome you.</span>"

@@ -38,7 +38,8 @@
 		target.drip(1)
 		target.blood_volume -= drainrate
 		vampire.add_blood(drainpayoff)
-		if(check_status(user, vampire, target))
+		playsound(H.loc,'sound/items/drink.ogg', rand(10,50), 1)
+		if(check_status(H, vampire, target))
 			H << "<span class='noticevampire'>You have gained [drainrate] units of blood from [target].</span>"
 		if(!target.blood_volume || target.blood_volume < drainrate)
 			H << "<span class='noticevampire'>[target] has ran out of blood.</span>"
@@ -52,7 +53,7 @@
 
 
 /obj/effect/proc_holder/vampire/bite/proc/check_status(mob/living/L, var/datum/vampire/V, var/mob/living/T)
-	if(L.weakened || L.stunned || L.sleeping || L.stat == DEAD || L.stat == UNCONCIOUS || get_dist(L, T) > 1)
+	if(L.weakened || L.stunned || L.sleeping || L.stat == DEAD || L.stat == UNCONSCIOUS || get_dist(L, T) > 1)
 		V.isDraining = FALSE
 		L << "<span class='alertvampire'>You've been interrupted!</span>"
 		return 0
@@ -79,20 +80,20 @@
 		return
 
 	V.chosen_click_attack = src
-	H << "<span class='vampirewarning'>[src] is now active. (Use your middle mouse button on anyone to use.)
+	H << "<span class='vampirewarning'>[src] is now active. (Use your middle mouse button on anyone to activate.)"
 	return 1
 
-/obj/effect/proc_holder/vampire/gaze/action_on_click(/mob/living/carbon/human/H, /datum/vampire/V, atom/target)
+/obj/effect/proc_holder/vampire/gaze/action_on_click(mob/living/carbon/human/H, /datum/vampire/V, atom/target)
 	. = ..()
 	if(!.)
 		return
 
-	if(!isliving(target))
+	if(!ishuman(target))
 		return
 
 	H.visible_message("<span class='warning'>[H]'s eyes flash red.</span>",\
 					"<span class='warning'>[H]'s eyes flash red.</span>")
-	if(istype(target, /mob/living/carbon/human))
+	if(ishuman(target))
 		var/mob/living/carbon/human/T = target
 		var/obj/item/clothing/glasses/G = T.glasses
 		if(G.flashprotect)
@@ -105,8 +106,8 @@
 			target << "<span class='warning'>[H]'s paralyzing gaze is blocked by [M]!</span>"
 			return
 
-	target << "<span class='warning'>You are paralyzed with fear!</span>"
-	target.Stun(5)
+		T << "<span class='warning'>You are paralyzed with fear!</span>"
+		T.Stun(5)
 
 
 /////////////////////////////
@@ -164,3 +165,17 @@
 							V.tracking = chosentarget
 							V.tracking.UpdateBloodTracking()
 
+
+/obj/effect/proc_holder/vampire/clearstuns
+	name = "Clear Stuns"
+	desc = "Remove all stuns and stamina damage from yourself."
+	blood_cost = 25
+	cooldownlen = 150
+
+/obj/effect/proc_holder/vampire/clearstuns/fire(mob/living/carbon/human/H)
+	H << "<span class='vampirenotice'>You feel a rush of energy overcome you.</span>"
+	H.SetSleeping(0)
+	H.SetParalysis(0)
+	H.SetStunned(0)
+	H.SetWeakened(0)
+	H.adjustStaminaLoss(-(H.getStaminaLoss()))

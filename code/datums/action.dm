@@ -384,7 +384,7 @@
 		return 0
 	var/obj/effect/proc_holder/vampire/vp = target
 	if(owner)
-		return !(vp.CD) // if it's on, it returns 0 - and the action button dims.
+		return !(vp.onCD) // if it's on, it returns 0 - and the action button dims.
 	return 0
 
 

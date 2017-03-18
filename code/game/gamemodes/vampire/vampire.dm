@@ -9,7 +9,7 @@
 	protected_jobs = list("Security Officer", "Warden", "Detective", "Head of Security", "Captain", "Head of Personnel")
 	required_players = 15
 	required_enemies = 3
-	recommended_enemies = 5
+	recommended_enemies = 10
 	reroll_friendly = 1
 
 /datum/game_mode/vampire/announce()
@@ -42,7 +42,7 @@
 	return 0 // to be continued. no, not a jojo reference!
 
 /datum/game_mode/proc/transform_vampire(var/datum/mind/M)
-	M.vampire = new(src)
+	M.vampire = new(M)
 	M.vampire.vampire = M.current
 	M.vampire.Basic()
 

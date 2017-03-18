@@ -1,3 +1,13 @@
+/mob/living/carbon/proc/AddVampireSpell(obj/effect/proc_holder/vampire/A)
+	abilities.Add(A)
+	if(A.has_action)
+		A.action.Grant(src)
+
+/mob/living/carbon/proc/RemoveVampireSpell(obj/effect/proc_holder/vampire/A)
+	abilities.Remove(A)
+	if(A.action)
+		A.action.Remove(src)
+
 /*
 This is practically custom spell code like alien or changeling.
 
@@ -11,33 +21,54 @@ This is practically custom spell code like alien or changeling.
 	panel = "Vampire"
 	name = "generic vampire"
 	desc = "TALK TO A CODER IF YOU SEE THIS!"
+	panel = "Vampire" // remove later after action buttons get added.
 	var/blood_cost = 0
 	var/pay_blood_immediately = TRUE // will we take blood from the spell immediately?
+	var/cooldown_immediately = TRUE
 	var/human_req = FALSE // does this spell require you to be human?
 	var/onCD
 	var/cooldownlen
 
-/obj/effect/proc_holder/vampire/proc/force_drainage(amt, var/datum/vampire/V)
+	var/clickdelay = 5 // delay after middle mouse button click.
+
+	var/has_action = TRUE
+	var/datum/action/spell_action/vampire/action = null
+	var/action_icon = 'icons/mob/actions.dmi'
+	var/action_icon_state = "spell_default"
+	var/action_background_icon_state = "bg_default_on"
+
+/obj/effect/proc_holder/vampire/New()
+	. = ..()
+	if(has_action)
+		action = new(src)
+
+/obj/effect/proc_holder/vampire/proc/force_drainage(amt, datum/vampire/V)
 	if(!amt)
 		return
 	if(!V)
 		return
 	V.bloodcount -= amt
 
-/obj/effect/proc_holder/vampire/proc/fire(var/mob/living/carbon/human/H)
+/obj/effect/proc_holder/vampire/proc/fire(mob/living/carbon/human/H)
 	if(ishuman(H))
 		if(!checkbloodcost(H))
 			return FALSE
 	else
 		if(human_req)
 			return FALSE
-	turnonCD()
-	addtimer(src, "turnOffCD", cooldownlen)
+	if(cooldown_immediately)
+		switchonCD(cooldownlen)
 	if(action)
 		action.UpdateButtonIcon()
 	return TRUE
 
-/obj/effect/proc_holder/vampire/proc/checkbloodcost(var/mob/living/carbon/human/H)
+/obj/effect/proc_holder/vampire/proc/switchonCD(time) // alternative to turnOnCD which turns it on, but sets a timer to turn it off. might merge with other proc later.
+	if(onCD)
+		return
+	turnOnCD()
+	addtimer(src, "turnOffCD", time)
+
+/obj/effect/proc_holder/vampire/proc/checkbloodcost(mob/living/carbon/human/H)
 	if(blood_cost)
 		if(H.mind.vampire)
 			if(H.mind.vampire.bloodcount - blood_cost < 0)
@@ -57,20 +88,21 @@ This is practically custom spell code like alien or changeling.
 	var/mob/living/carbon/human/H = usr
 
 	if(!H.mind.vampire)
-		qdel(src)
-		return 1
-
-	if(!pay_blood_immediately)
+		H.RemoveVampireSpell(src)
 		return 1
 
 	if(H.mind.vampire.isDraining)
+		usr << "<span class='alertvampire'>You can't use abilities while draining blood.</span>"
 		return 1
 
 	if(fire(H))
-		force_drainage(blood_cost, H.mind.vampire)
+		if(pay_blood_immediately)
+			force_drainage(blood_cost, H.mind.vampire)
 
 /obj/effect/proc_holder/vampire/proc/turnOnCD()
 	onCD = TRUE
+	if(action)
+		action.UpdateButtonIcon()
 
 /obj/effect/proc_holder/vampire/proc/turnOffCD()
 	onCD = FALSE
@@ -78,22 +110,26 @@ This is practically custom spell code like alien or changeling.
 		action.UpdateButtonIcon()
 
 // we are clicking the target during this. check click.dm for more. middle mouse button
-/obj/effect/proc_holder/vampire/proc/action_on_click(var/mob/living/carbon/human/H, var/datum/vampire/V, var/atom/target)
+/obj/effect/proc_holder/vampire/proc/action_on_click(mob/living/carbon/human/H, datum/vampire/V, atom/target)
 	if(onCD)
+		if(H)
+			H << "<span class='noticevampire'>[src] is on a cooldown.</span>"
 		return 0
+	switchonCD(cooldownlen)
 	return 1
 
-/obj/effect/proc_holder/vampire/proc/checkout_click_attack(var/mob/M, var/datum/vampire/V)
+/obj/effect/proc_holder/vampire/proc/checkout_click_attack(mob/M, datum/vampire/V)
 	if(!V)
 		return FALSE
 
 	if(V.chosen_click_attack)
 		if(src == V.chosen_click_attack)
 			V.chosen_click_attack = null
-			M << "<span class='vampirenotice'>[src] has been deactivated.</span>"
+			M << "<span class='noticevampire'>[src] has been deactivated.</span>"
 			return FALSE
 		else
-			M << "<span class='vampirewarning'>You already have another click-attack technique active ([V.chosen_click_attack.name])</span>"
+			M << "<span class='alertvampire'>You already have another click-attack technique active ([V.chosen_click_attack.name])</span>"
+			turnOnCD()
 			return FALSE
 	else
 		return TRUE

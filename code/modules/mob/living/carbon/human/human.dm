@@ -1144,5 +1144,5 @@
 			if(L.mind.vampire.tracking == src)
 				if(L.client)
 					if(L.client.images)
-						L.client.images.Remove(thermalOverlay)
+						L.client.images.Remove(bloodtracking)
 	qdel(bloodtracking)

@@ -360,3 +360,82 @@
 					H.visible_message("<span class='danger'>[H] steps in the broken glass!</span>", \
 							"<span class='userdanger'>You step in the broken glass!</span>")
 					cooldown = world.time
+
+/obj/item/stack/sheet/glass/tinted
+	name = "tinted glass"
+	desc = "Every eavesdroppers favorite."
+
+/obj/item/stack/sheet/glass/tinted/fifty
+	amount = 50
+
+/obj/item/stack/sheet/glass/tinted/twenty
+	amount = 20
+
+/obj/item/stack/sheet/glass/tinted/construct_window(mob/user)
+	if(!user || !src)
+		return 0
+	if(!istype(user.loc,/turf))
+		return 0
+	if(!user.IsAdvancedToolUser())
+		user << "<span class='warning'>You don't have the dexterity to do this!</span>"
+		return 0
+	if(zero_amount())
+		return 0
+	var/title = "Sheet-Glass"
+	title += " ([src.get_amount()] sheet\s left)"
+	switch(alert(title, "Would you like full tile glass or one direction?", "One Direction", "Full Window", "Cancel", null))
+		if("One Direction")
+			if(!src)
+				return 1
+			if(src.loc != user)
+				return 1
+
+			var/list/directions = new/list(cardinal)
+			var/i = 0
+			for (var/obj/structure/window/win in user.loc)
+				i++
+				if(i >= 4)
+					user << "<span class='warning'>There are too many windows in this location.</span>"
+					return 1
+				directions-=win.dir
+				if(!(win.ini_dir in cardinal))
+					user << "<span class='danger'>Can't let you do that.</span>"
+					return 1
+
+			//Determine the direction. It will first check in the direction the person making the window is facing, if it finds an already made window it will try looking at the next cardinal direction, etc.
+			var/dir_to_set = 2
+			for(var/direction in list( user.dir, turn(user.dir,90), turn(user.dir,180), turn(user.dir,270) ))
+				var/found = 0
+				for(var/obj/structure/window/WT in user.loc)
+					if(WT.dir == direction)
+						found = 1
+				if(!found)
+					dir_to_set = direction
+					break
+
+			var/obj/structure/window/W
+			W = new /obj/structure/window/reinforced/tinted( user.loc, 0 )
+			W.dir = dir_to_set
+			W.ini_dir = W.dir
+			W.anchored = 0
+			W.air_update_turf(1)
+			src.use(1)
+			W.add_fingerprint(user)
+		if("Full Window")
+			if(!src)
+				return 1
+			if(src.loc != user)
+				return 1
+			if(src.get_amount() < 2)
+				user << "<span class='warning'>You need more glass to do that!</span>"
+				return 1
+			if(locate(/obj/structure/window) in user.loc)
+				user << "<span class='warning'>There is a window in the way!</span>"
+				return 1
+			var/obj/structure/window/W
+			W = new /obj/structure/window/reinforced/tinted/fulltile( user.loc, 0 )
+			W.anchored = 0
+			W.air_update_turf(1)
+			W.add_fingerprint(user)
+			src.use(2)
+	return 0

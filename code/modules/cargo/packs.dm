@@ -1125,6 +1125,12 @@
 	contains = list(/obj/item/stack/sheet/mineral/sandstone/thirty)
 	crate_name = "sandstone blocks crate"
 
+/datum/supply_pack/materials/tintglass50
+	name = "50 Tinted Glass Sheets"
+	cost = 1000
+	contains = list(/obj/item/stack/sheet/glass/tinted/fifty)
+	crate_name = "tinted glass sheets crate"
+
 //////////////////////////////////////////////////////////////////////////////
 //////////////////////////// Miscellaneous ///////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////

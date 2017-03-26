@@ -39,6 +39,7 @@
 	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/bite(null))
 	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/gaze(null))
 	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/bloodtracking(null))
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/battrans(null))
 
 	vampire.dna.species.update_life = FALSE
 	vampire.dna.species.brutemod = 1

@@ -38,19 +38,20 @@
 		drainpayoff = 3
 		H << "<span class='alertvampire'>This one has a strange odor.</span>"
 
+	playsound(H.loc,'sound/magic/Demon_consume.ogg', rand(10,30), 1)
 	H << "<span class='noticevampire'>You sink your fangs into [target]!</span>"
 	vampire.isDraining = TRUE
 	while(vampire.isDraining)
-		target.blood_volume -= drainrate
-		vampire.add_blood(drainpayoff)
-		playsound(H.loc,'sound/items/drink.ogg', rand(10,50), 1)
 		if(check_status(H, vampire, target))
-			H << "<span class='noticevampire'>You have gained [drainrate] units of blood from [target].</span>"
+			H << "<span class='noticevampire'>You have gained [drainrate] units of blood from [target]. They have [target.blood_volume] units remaining. You now have [vampire.bloodcount] units.</span>"
+			target.blood_volume -= drainrate
+			vampire.add_blood(drainpayoff)
+			playsound(H.loc,'sound/items/drink.ogg', rand(10,50), 1)
 		if(!target.blood_volume || target.blood_volume < drainrate)
 			H << "<span class='noticevampire'>[target] has ran out of blood.</span>"
 			vampire.isDraining = FALSE
 		if(target.job == "Chaplain")
-			H << "<span class='noticevampire'>This one's blood is too pure for your tastes!</span>"
+			H << "<span class='userdanger'>This one's blood is holy! It burns!</span>"
 			H.reagents.add_reagent("sacid", 10)
 		if(target.stat == DEAD)
 			drainrate = 3
@@ -205,3 +206,31 @@
 	H.SetStunned(0)
 	H.SetWeakened(0)
 	H.adjustStaminaLoss(-(H.getStaminaLoss()))
+
+/obj/effect/proc_holder/vampire/battrans
+	name = "Bat Transformation"
+	desc = "Become a bat, able to slip under doors "
+	pay_blood_immediately = FALSE
+	cooldown_immediately = FALSE
+	cooldownlen = 0
+	var/mob/living/simple_animal/hostile/retaliate/bat/vampire/vbat = null
+	var/transformed = FALSE
+
+/obj/effect/proc_holder/vampire/battrans/fire(mob/living/carbon/human/H, datum/vampire/V)
+	if(transformed)
+		return
+	else
+		H << "<span class='noticevampire'>You take the form of a bat.</span>"
+		if(V)
+			force_drainage(25, V)
+		if(!vbat)
+			vbat = new /mob/living/simple_animal/hostile/retaliate/bat/vampire(H.loc)
+			vbat.vamp = H
+			vbat.S = src
+		H.forceMove(vbat)
+		H.status_flags |= GODMODE
+		vbat.verbs += /mob/living/simple_animal/hostile/retaliate/bat/vampire/verb/humanform
+		H.mind.transfer_to(vbat)
+		vbat.adjustBruteLoss(H.maxHealth - H.health)
+
+

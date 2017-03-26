@@ -66,6 +66,7 @@
 
 /datum/vampire/proc/ThreeHundred()
 	threehundred_unlocked = TRUE
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/radiomalf(null))
 
 /datum/vampire/proc/FourHundred()
 	fourhundred_unlocked = TRUE

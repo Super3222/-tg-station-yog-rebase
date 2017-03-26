@@ -427,6 +427,7 @@
 #include "code\game\gamemodes\traitor\traitorabd.dm"
 #include "code\game\gamemodes\vampire\ash_reanimation.dm"
 #include "code\game\gamemodes\vampire\vamp_items.dm"
+#include "code\game\gamemodes\vampire\vamp_structures.dm"
 #include "code\game\gamemodes\vampire\vampire.dm"
 #include "code\game\gamemodes\vampire\vdatum.dm"
 #include "code\game\gamemodes\vampire\vampire_powers\basic.dm"

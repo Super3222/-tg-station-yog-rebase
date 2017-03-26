@@ -199,9 +199,75 @@
 	cooldownlen = 150
 
 /obj/effect/proc_holder/vampire/clearstuns/fire(mob/living/carbon/human/H)
+	if(!..())
+		return
+
 	H << "<span class='noticevampire'>You feel a rush of energy overcome you.</span>"
 	H.SetSleeping(0)
 	H.SetParalysis(0)
 	H.SetStunned(0)
 	H.SetWeakened(0)
 	H.adjustStaminaLoss(-(H.getStaminaLoss()))
+
+
+///////////////////////////////////////////////
+////////////	300////////////////////////////
+//////////////////////////////////////////////
+
+/obj/effect/proc_holder/vampire/radiomalf
+	name = "Radio Malfunction"
+	desc = "Disable all nearby radios including intercoms, headsets, and handheld."
+	blood_cost = 70
+
+/obj/effect/proc_holder/vampire/radiomalf/fire(mob/living/carbon/human/H)
+	if(!..())
+		return
+
+	H.visible_message("<span class='notice'>[H] starts clapping....</span>",\
+		"<span class='notice'>[H] starts clapping...</span>")
+
+	var/list/affected_turfs = list()
+	for(var/turf/T in viewers(7,H)
+		if(T.flags & NOJAUNT) // aka it was blessed
+			continue
+		if(get_dist(H, T) > 5)
+			continue
+		affected_turfs += T
+
+	for(var/obj/item/device/radio/R in affected_turfs)
+		R.listening = 0
+		R.broadcasting = 0
+		if(ishuman(R.loc))
+			R.loc << "<span class='warning'>[R] begins to malfunction!</span>"
+
+
+/obj/effect/proc_holder/vampire/coffin
+	name = "Designate Coffin"
+	desc = "Choose a coffin."
+	blood_cost = 250
+	var/obj/structure/closet/coffin/vampiric = null
+
+/obj/effect/proc_holder/vampire/coffin/fire(mob/living/carbon/human/H)
+	if(!..())
+		return
+
+	if(vampiric)
+		H << "<span class='vampirealert'>You already have a coffin.</span>"
+		return
+
+	var/obj/structure/closet/coffin/found = FALSE
+	for(var/obj/structure/closet/coffin/C in viewers(7, H))
+		if(found)
+			break
+		if(istype(C, /obj/structure/closet/coffin/vampiric))
+			continue
+		found = C
+
+	if(!found)
+		return
+
+	vampiric = new(get_turf(found))
+	qdel(found)
+
+	H << "<span class='vampirealert'>You have sucessfully designated a coffin. While you are asleep in \
+		this coffin you will slowly regenerate health and blood.</span>"

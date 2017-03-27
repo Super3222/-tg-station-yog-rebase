@@ -1,6 +1,6 @@
-/////////////////////////////////////////////////////
-///////////////	BASIC ABILITIES /////////////////////
-/////////////////////////////////////////////////////
+/////////////////////////
+/////BASIC ABILITIES/////
+/////////////////////////
 
 
 /////////////////////
@@ -38,23 +38,21 @@
 		drainpayoff = 3
 		H << "<span class='alertvampire'>This one has a strange odor.</span>"
 
+	playsound(H.loc,'sound/magic/Demon_consume.ogg', rand(10,30), 1)
 	H << "<span class='noticevampire'>You sink your fangs into [target]!</span>"
 	vampire.isDraining = TRUE
 	while(vampire.isDraining)
-		target.blood_volume -= drainrate
-		vampire.add_blood(drainpayoff)
-		playsound(H.loc,'sound/items/drink.ogg', rand(10,50), 1)
-		if(check_status(H, vampire, target))
-			H << "<span class='noticevampire'>You have gained [drainrate] units of blood from [target].</span>"
-		if(!target.blood_volume || target.blood_volume < drainrate)
-			H << "<span class='noticevampire'>[target] has ran out of blood.</span>"
-			vampire.isDraining = FALSE
-		if(target.job == "Chaplain")
-			H << "<span class='noticevampire'>This one's blood is too pure for your tastes!</span>"
-			H.reagents.add_reagent("sacid", 10)
 		if(target.stat == DEAD)
-			drainrate = 3
+			drainrate = 70
 			drainpayoff = 3
+		if(check_status(H, vampire, target, drainrate))
+			target.blood_volume -= drainrate
+			vampire.add_blood(drainpayoff)
+			H << "<span class='noticevampire'>You have gained [drainrate] units of blood from [target]. They have [target.blood_volume] units remaining. You now have [vampire.bloodcount] units.</span>"
+			playsound(H.loc,'sound/items/drink.ogg', rand(10,50), 1)
+		if(target.job == "Chaplain")
+			H << "<span class='userdanger'>This one's blood is holy! It burns!</span>"
+			H.reagents.add_reagent("sacid", 10)
 
 		vampire.check_for_new_ability()
 		sleep(20)
@@ -62,10 +60,14 @@
 	H << "<span class='noticevampire'>You have finished draining [target]</span>"
 
 
-/obj/effect/proc_holder/vampire/bite/proc/check_status(mob/living/L, datum/vampire/V, mob/living/T)
+/obj/effect/proc_holder/vampire/bite/proc/check_status(mob/living/L, datum/vampire/V, mob/living/carbon/human/T, rate)
 	if(L.weakened || L.stunned || L.sleeping || L.stat == DEAD || L.stat == UNCONSCIOUS || get_dist(L, T) > 1 || !L.pulling)
 		V.isDraining = FALSE
 		L << "<span class='alertvampire'>You've been interrupted!</span>"
+		return 0
+	if(!T.blood_volume || T.blood_volume < rate)
+		L << "<span class='noticevampire'>[T] has ran out of blood.</span>"
+		V.isDraining = FALSE
 		return 0
 	return 1
 
@@ -117,17 +119,20 @@
 		var/obj/item/clothing/glasses/G = T.glasses
 		if(G)
 			if(G.flash_protect)
-				H << "<span class='alertvampire'>[T] has protective sunglasses on!</span>"
-				target << "<span class='warning'>[H]'s paralyzing gaze is blocked by your [G]!</span>"
-				return
+				if(V && !(V.eighthundred_unlocked))
+					H << "<span class='alertvampire'>[T] has protective sunglasses on!</span>"
+					target << "<span class='warning'>[H]'s paralyzing gaze is blocked by your [G]!</span>"
+					return
 		var/obj/item/clothing/mask/M = T.wear_mask
 		if(M)
 			if(M.flags_cover & MASKCOVERSEYES)
-				H << "<span class='alertvampire'>[T]'s mask is covering their eyes!</span>"
-				target << "<span class='warning'>[H]'s paralyzing gaze is blocked by your [M]!</span>"
-				return
+				if(V && !(V.eighthundred_unlocked))
+					H << "<span class='alertvampire'>[T]'s mask is covering their eyes!</span>"
+					target << "<span class='warning'>[H]'s paralyzing gaze is blocked by your [M]!</span>"
+					return
 
 		T << "<span class='warning'>You are paralyzed with fear!</span>"
+		H << "<span class='noticevampire'>You paralyze [T].</span>"
 		T.Stun(5)
 
 
@@ -185,89 +190,3 @@
 						if(V)
 							V.tracking = chosentarget
 							V.tracking.UpdateBloodTracking()
-
-
-//////////////////////////////////////////////////
-///////////////	100 ABILITIES ////////////////////
-//////////////////////////////////////////////////
-
-
-/obj/effect/proc_holder/vampire/clearstuns
-	name = "Clear Stuns"
-	desc = "Remove all stuns and stamina damage from yourself."
-	blood_cost = 25
-	cooldownlen = 150
-
-/obj/effect/proc_holder/vampire/clearstuns/fire(mob/living/carbon/human/H)
-	if(!..())
-		return
-
-	H << "<span class='noticevampire'>You feel a rush of energy overcome you.</span>"
-	H.SetSleeping(0)
-	H.SetParalysis(0)
-	H.SetStunned(0)
-	H.SetWeakened(0)
-	H.adjustStaminaLoss(-(H.getStaminaLoss()))
-
-
-///////////////////////////////////////////////
-////////////	300////////////////////////////
-//////////////////////////////////////////////
-
-/obj/effect/proc_holder/vampire/radiomalf
-	name = "Radio Malfunction"
-	desc = "Disable all nearby radios including intercoms, headsets, and handheld."
-	blood_cost = 70
-
-/obj/effect/proc_holder/vampire/radiomalf/fire(mob/living/carbon/human/H)
-	if(!..())
-		return
-
-	H.visible_message("<span class='notice'>[H] starts clapping....</span>",\
-		"<span class='notice'>[H] starts clapping...</span>")
-
-	var/list/affected_turfs = list()
-	for(var/turf/T in viewers(7,H)
-		if(T.flags & NOJAUNT) // aka it was blessed
-			continue
-		if(get_dist(H, T) > 5)
-			continue
-		affected_turfs += T
-
-	for(var/obj/item/device/radio/R in affected_turfs)
-		R.listening = 0
-		R.broadcasting = 0
-		if(ishuman(R.loc))
-			R.loc << "<span class='warning'>[R] begins to malfunction!</span>"
-
-
-/obj/effect/proc_holder/vampire/coffin
-	name = "Designate Coffin"
-	desc = "Choose a coffin."
-	blood_cost = 250
-	var/obj/structure/closet/coffin/vampiric = null
-
-/obj/effect/proc_holder/vampire/coffin/fire(mob/living/carbon/human/H)
-	if(!..())
-		return
-
-	if(vampiric)
-		H << "<span class='vampirealert'>You already have a coffin.</span>"
-		return
-
-	var/obj/structure/closet/coffin/found = FALSE
-	for(var/obj/structure/closet/coffin/C in viewers(7, H))
-		if(found)
-			break
-		if(istype(C, /obj/structure/closet/coffin/vampiric))
-			continue
-		found = C
-
-	if(!found)
-		return
-
-	vampiric = new(get_turf(found))
-	qdel(found)
-
-	H << "<span class='vampirealert'>You have sucessfully designated a coffin. While you are asleep in \
-		this coffin you will slowly regenerate health and blood.</span>"

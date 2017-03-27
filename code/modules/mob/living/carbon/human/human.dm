@@ -1136,13 +1136,10 @@
 	if(!bloodtracking)
 		return
 
-	if(mind.vampire)
-		return
-
 	for(var/mob/living/L in mob_list)
 		if(L.mind.vampire)
 			if(L.mind.vampire.tracking == src)
 				if(L.client)
-					if(L.client.images)
-						L.client.images.Remove(bloodtracking)
+					L.client.images.Remove(bloodtracking)
 	qdel(bloodtracking)
+	bloodtracking = null

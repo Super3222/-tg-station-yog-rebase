@@ -4,6 +4,7 @@
 	var/isDraining
 	var/obj/effect/proc_holder/vampire/chosen_click_attack
 	var/mob/living/carbon/human/tracking
+	var/obj/structure/closet/coffin/vampiric/coffin
 	var/basic_unlocked
 	var/hundred_unlocked
 	var/twohundred_unlocked
@@ -49,38 +50,53 @@
 	vampire.dna.species.specflags |= NOBLOOD
 	vampire.dna.species.specflags |= NOBREATH
 
+	vampire.faction += "Vampire"
+
 /datum/vampire/proc/Hundred()
 	hundred_unlocked = TRUE
 	vampire.dna.species.toxmod = 0
 	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/clearstuns(null))
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/hypno(null))
 
 /datum/vampire/proc/TwoHundred()
 	twohundred_unlocked = TRUE
-	var/obj/item/organ/cyberimp/eyes/E = vampire.getorgan(/obj/item/organ/cyberimp/eyes)
-	if(E)
-		vampire << "<span class='noticevampire'>[E] is swallowed.</span>"
-		qdel(E)
-
-	var/obj/item/organ/cyberimp/eyes/vampire/weak/V = new(get_turf(vampire))
-	V.Insert(vampire)
+	install_eyes(/obj/item/organ/cyberimp/eyes/vampire/weak)
+	// upon other things, ash reanimation works in
 
 /datum/vampire/proc/ThreeHundred()
 	threehundred_unlocked = TRUE
 	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/radiomalf(null))
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/battrans(null))
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/coffin(null))
 
 /datum/vampire/proc/FourHundred()
 	fourhundred_unlocked = TRUE
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/shriek(null))
 
 /datum/vampire/proc/SixHundred()
 	sixhundred_unlocked = TRUE
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/strongclearstuns(null))
+	for(var/obj/effect/proc_holder/vampire/clearstuns/CS in vampire.abilities)
+		vampire.RemoveVampireSpell(CS)
+	vampire.see_invisible = SEE_INVISIBLE_OBSERVER
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/rendghost(null))
 
 /datum/vampire/proc/EightHundred()
 	eighthundred_unlocked = TRUE
+	vampire.dna.species.heatmod = 1
+	vampire << "<span class='noticevampire'>Your glare and hypnotize abilities works through sunglasses and gas masks now.</span>"
+	install_eyes(/obj/item/organ/cyberimp/eyes/vampire/strong)
+
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/charm(null))
 
 /datum/vampire/proc/Thousand()
 	thousand_unlocked = TRUE
 
+	vampire.AddVampireSpell(new /obj/effect/proc_holder/vampire/summon(null))
+
 /datum/vampire/proc/ForgetAbilities()
+	for(var/obj/effect/proc_holder/vampire/vampab in vampire.abilities)
+		vampire.RemoveVampireSpell(vampab)
 	//vampire.RemoveAbility()
 
 /datum/vampire/process() // called in carbon life.
@@ -90,7 +106,10 @@
 	check_burning_status()
 
 /datum/vampire/proc/check_bright_turf()
-	if(!vampire.stat)
+	if(vampire.stat == DEAD)
+		return
+
+	if(thousand_unlocked)
 		return
 
 	var/turf/T = get_turf(vampire)
@@ -99,10 +118,10 @@
 			return
 		vampire << 'sound/weapons/sear.ogg'
 		vampire.apply_damage(5, BURN)
-		vampire << "<span class='genesisred'>THE LIGHT </span><span class='alertvampire'> IT BURNS!!!</span>"
+		vampire << "<span class='genesisred'>THE LIIIIIIGHT </span><span class='alertvampire'> IT BURNS!!!</span>"
 
 /datum/vampire/proc/check_burning_status()
-	if(!vampire.stat)
+	if(vampire.stat == DEAD)
 		if(vampire.on_fire)
 			var/str = FALSE
 			if(twohundred_unlocked)
@@ -112,6 +131,27 @@
 			var/obj/effect/decal/cleanable/ash/vampiric/V = new(get_turf(vampire), strong = str)
 			vampire.forceMove(V)
 			V.storedmob = vampire
+			var/mob/M
+			if(vampire.key)
+				M = vampire
+			else
+				for(var/mob/dead/observer/ghost in mob_list)
+					if(M)
+						break
+					if(ghost.name == vampire.name && ghost.real_name == vampire.real_name)
+						M = ghost
+						break
+			M << "<span class='noticevampire'>Your body has been crumpled up into dust. Ashes to ashes, and \
+				when blood falls over them you will be reborn.</span>"
+
+/datum/vampire/proc/install_eyes(obj/item/organ/cyberimp/eyes/E)
+	if(!E)
+		return
+	var/obj/item/organ/cyberimp/eyes/eyes = vampire.getorgan(/obj/item/organ/cyberimp/eyes)
+	if(eyes)
+		qdel(eyes)
+	E = new(get_turf(vampire))
+	E.Insert(vampire, 1)
 
 #define FREEZE_TOUCH_TEMP	50
 
@@ -119,7 +159,7 @@
 	if(!prob(25))
 		return
 
-	H.bodytemperature = FREEZE_TOUCH_TEMP
+	H.bodytemperature = min(FREEZE_TOUCH_TEMP, H.bodytemperature - (0.8 * FREEZE_TOUCH_TEMP))
 	H << "<span class='warning'>Your body begins to</span> <span class='alertvampire'>freeze up...</span>"
 
 #undef FREEZE_TOUCH_TEMP
@@ -156,3 +196,21 @@
 	world << "turned [key] into a vampire"
 	if(mind.vampire)
 		return TRUE
+
+// END TESTING STUFF
+
+// under get_limit() we are using the vampire's current unlock requirements as a limit towards \
+ how much the vampire can do X (whatever you want to use the limit for).
+// For instance, this is used as a cap towards how much blood a vampire can regenerate back inside of \
+ their coffin.
+
+/datum/vampire/proc/get_limit()
+	var/limit
+	if(bloodcount >= 100) limit = 100
+	if(bloodcount >= 200) limit = 200
+	if(bloodcount >= 300) limit = 300
+	if(bloodcount >= 400) limit = 400
+	if(bloodcount >= 600) limit = 600
+	if(bloodcount >= 800) limit = 800
+	if(bloodcount >= 1000) limit = 1000
+	return limit

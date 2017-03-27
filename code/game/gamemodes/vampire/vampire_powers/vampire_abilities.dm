@@ -10,10 +10,7 @@
 
 /*
 This is practically custom spell code like alien or changeling.
-
-	REMEMBER - IF YOU'RE ADDING A NEW VAMPIRE SPELL ADD IT TO ForgetAbilities in vdatum.dm
-
-	ALSO - USE THIS FOR ACTION BUTTONS:
+	USE THIS FOR ACTION BUTTONS:
 	/datum/action/spell_action/vampire
 */
 
@@ -28,6 +25,7 @@ This is practically custom spell code like alien or changeling.
 	var/human_req = FALSE // does this spell require you to be human?
 	var/onCD
 	var/cooldownlen
+	var/req_bloodcount
 
 	var/clickdelay = 5 // delay after middle mouse button click.
 
@@ -72,9 +70,13 @@ This is practically custom spell code like alien or changeling.
 	if(blood_cost)
 		if(H.mind.vampire)
 			if(H.mind.vampire.bloodcount - blood_cost < 0)
-				H << "<span class='alien'>You lack the blood to perform this technique...</span>"
+				H << "<span class='alertvampire'>You lack the blood to perform this technique...</span>"
 				return FALSE
 			else
+				if(req_bloodcount)
+					if(H.mind.vampire.bloodcount < req_bloodcount)
+						H << "<span class='alertvampire'>You need at least [req_bloodcount] to use this technique...</span>"
+						return FALSE
 				return TRUE
 		else
 			return FALSE
@@ -129,7 +131,7 @@ This is practically custom spell code like alien or changeling.
 			return FALSE
 		else
 			M << "<span class='alertvampire'>You already have another click-attack technique active ([V.chosen_click_attack.name])</span>"
-			turnOnCD()
+			//turnOnCD()
 			return FALSE
 	else
 		return TRUE

@@ -36,3 +36,23 @@
 			if(issilicon(L))
 				L.Weaken(4)
 				playsound(L, 'sound/machines/warning-buzzer.ogg', 50, 1)
+
+/obj/effect/proc_holder/vampire/batswarm
+	name = "Bat Swarm"
+	desc = "Summon a swarm of hostile bats to delay pursuers or cause chaos."
+	human_req = TRUE
+	blood_cost = 150
+	cooldownlen = 400
+
+/obj/effect/proc_holder/vampire/batswarm/fire(mob/living/carbon/human/H)
+	if(!..())
+		return
+	H.visible_message("<span class='warning'>[H] summons a swarm of bats!</span>")
+	playsound(get_turf(H), 'sound/magic/Ethereal_Enter.ogg', 50, 1, -1)
+	for(var/i = 1, i <= amount_to_spawn, i++)
+		var/mob/living/simple_animal/hostile/bat/B
+		B = new /mob/living/simple_animal/hostile/bat(get_turf(holder.my_atom))
+		B.faction |= "Vampire"
+		if(prob(50))
+			for(var/j = 1, j <= rand(1, 3), j++)
+				step(C, pick(NORTH,SOUTH,EAST,WEST))

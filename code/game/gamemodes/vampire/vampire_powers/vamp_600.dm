@@ -23,6 +23,21 @@
 	if(H.reagents.get_reagent_amount("omnizine") < 30 && H.reagents.get_reagent_amount("omnizine") + 10 <= 30)
 		H.reagents.add_reagent("omnizine", 10) // while stimulants do heal, I want to make sure that they're getting something out of this 100%
 
+/obj/effect/proc_holder/vampire/cloakofdarkness
+	name = "Cloak of Darkness"
+	desc = "Blend into the darkness. You become less visible the darker the area you are in."
+	req_bloodcount = 0
+	human_req = TRUE
+
+/obj/effect/proc_holder/vampire/cloakofdarkness/fire(mob/living/carbon/human/H)
+	if(!..())
+		return
+	var/datum/mutation/human/HM = mutations_list[STEALTH]
+	if(HM in H.dna.mutations)
+		HM.force_lose(H)
+	else
+		HM.force_give(H)
+
 
 #define RENDGHOST_MONEYCOUNT 20
 
